@@ -23,7 +23,7 @@ func Readln(r *bufio.Reader) (string, error) {
 
 func main() {
 
-	domainsToMatch := make(map[string][]string)
+	domainsToMatch := make(map[string]string)
 	//categoriesToCheck := []string{"adult", "agressif", "celebrity", "dangerous_material", "dating", "drogue", "malware", "mixed_adult", "phishing", "sect", "warez"}
 	categoriesToCheck := []string{"dangerous_material"}
 
@@ -36,7 +36,7 @@ func main() {
 		reader := bufio.NewReader(ofd)
 		domain, e := Readln(reader)
 		for e == nil {
-			domainsToMatch[filepath] = append(domainsToMatch[filepath], domain)
+			domainsToMatch[domain] = filepath
 			domain, e = Readln(reader)
 		}
 	}
@@ -49,19 +49,19 @@ func main() {
 		fmt.Printf("error opening file: %v\n", err)
 		os.Exit(1)
 	}
+
 	reader := bufio.NewReader(ofd)
 	line, e := Readln(reader)
 	for e == nil {
-		for category, v := range domainsToMatch {
-			for _, element := range v {
-				if strings.Contains(line, element) {
-					ip := re.FindString(line)
-					results[ip + category + element] = "ip: " + ip + ", category: " + category + ", domain: " + element
-				}
+		for domain, category := range domainsToMatch {
+			if strings.Contains(line, domain) {
+				ip := re.FindString(line)
+				results[ip + category + domain] = "ip: " + ip + ", category: " + category + ", domain: " + domain
 			}
 		}
 		line, e = Readln(reader)
 	}
+	
 	for _, info := range results {
 		fmt.Printf(info + "\n")
 	}
