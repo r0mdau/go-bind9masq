@@ -23,12 +23,10 @@ func Readln(r *bufio.Reader) (string, error) {
 	return string(ln), err
 }
 
-func printDns(){
+func extractDomainsToMatch(categories []string) map[string]string {
 	domainsToMatch := make(map[string]string)
-	categoriesToCheck := []string{"adult", "agressif", "celebrity", "dangerous_material", "dating", "drogue", "malware", "mixed_adult", "phishing", "sect", "warez"}
-
 	// Put domains as key in map for faster finding and their category as value
-	for _, filepath := range categoriesToCheck {
+	for _, filepath := range categories {
 		ofd, err := os.Open("dest/" + filepath + "/domains")
 		if err != nil {
 			fmt.Printf("error opening file: %v\n", err)
@@ -41,6 +39,12 @@ func printDns(){
 			domain, e = Readln(reader)
 		}
 	}
+	return domainsToMatch
+}
+
+func printDns(){
+	categoriesToCheck := []string{"adult", "agressif", "celebrity", "dangerous_material", "dating", "drogue", "malware", "mixed_adult", "phishing", "sect", "warez"}
+	domainsToMatch := extractDomainsToMatch(categoriesToCheck)
 
 	// storing entire file as string to find in one regex every domain + ip
 	b, err := ioutil.ReadFile("/var/log/named/queries.log")
@@ -65,33 +69,23 @@ func printDns(){
 	}
 }
 
-func updateBindBlacklistedZones() {
-	domainsToMatch := make(map[string]string)
-	categoriesToCheck := []string{"agressif", "dangerous_material", "drogue", "malware", "phishing", "sect", "warez"}
+func bind9ZonesFormat() string {
+	return "zone \"%s\" {type master; file \"/etc/bind/blacklisted.db\";};\n"
+}
 
-	f, err := os.Create("test.txt")
+func updateBlacklistedZones() {
+	categoriesToCheck := []string{"agressif", "dangerous_material", "drogue", "malware", "phishing", "sect", "warez"}
+	domainsToMatch := extractDomainsToMatch(categoriesToCheck)
+
+	f, err := os.Create("build/blacklisted.db")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// Put domains as key in map for faster finding and their category as value
-	for _, filepath := range categoriesToCheck {
-		ofd, err := os.Open("dest/" + filepath + "/domains")
-		if err != nil {
-			fmt.Printf("error opening file: %v\n", err)
-			os.Exit(1)
-		}
-		reader := bufio.NewReader(ofd)
-		domain, e := Readln(reader)
-		for e == nil {
-			domainsToMatch[domain] = domain
-			domain, e = Readln(reader)
-		}
-	}
-
-	for _, domain := range domainsToMatch {
-		f.WriteString("zone \"" + domain + "\" {type master; file \"/etc/bind/blacklisted.db\";};\n")
+	format := bind9ZonesFormat()
+	for domain, _ := range domainsToMatch {
+		f.WriteString(fmt.Sprintf(format, domain))
 	}
 
 	err = f.Close()
@@ -105,9 +99,9 @@ func main() {
 	app := &cli.App{
 		Commands: []*cli.Command{
 			{
-				Name:    "printDns",
-				Aliases: []string{"p"},
-				Usage:   "print dns already queried",
+				Name:    "show",
+				Aliases: []string{"s"},
+				Usage:   "show dns already queried",
 				Action: func(c *cli.Context) error {
 					printDns()
 					return nil
@@ -118,7 +112,7 @@ func main() {
 				Aliases: []string{"u"},
 				Usage:   "update blacklisted domains",
 				Action: func(c *cli.Context) error {
-					updateBindBlacklistedZones()
+					updateBlacklistedZones()
 					return nil
 				},
 			},

@@ -20,3 +20,13 @@ Command `make` to build arm binary and fetch updates from dinctionnaries.
 
 See the target build-amd64 in the `Makefile`, if you want to build for this architecture. 
 Documentation here : https://hub.docker.com/_/golang/
+
+## TODO
+
+Maybe use these lists
+```
+StevenBlack -> https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+MalwareDom  -> https://mirror1.malwaredomains.com/files/justdomains
+DisconTrack -> https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
+DisconAd    -> https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+```
