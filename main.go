@@ -26,8 +26,8 @@ func Readln(r *bufio.Reader) (string, error) {
 func extractDomainsToMatch(categories []string) map[string]string {
 	domainsToMatch := make(map[string]string)
 	// Put domains as key in map for faster finding and their category as value
-	for _, filepath := range categories {
-		ofd, err := os.Open("dest/" + filepath + "/domains")
+	for _, category := range categories {
+		ofd, err := os.Open("dest/" + category + "/domains")
 		if err != nil {
 			fmt.Printf("error opening file: %v\n", err)
 			os.Exit(1)
@@ -35,7 +35,7 @@ func extractDomainsToMatch(categories []string) map[string]string {
 		reader := bufio.NewReader(ofd)
 		domain, e := Readln(reader)
 		for e == nil {
-			domainsToMatch[domain] = filepath
+			domainsToMatch[domain] = category
 			domain, e = Readln(reader)
 		}
 	}
@@ -43,8 +43,8 @@ func extractDomainsToMatch(categories []string) map[string]string {
 }
 
 func printDns(){
-	categoriesToCheck := []string{"adult", "agressif", "celebrity", "dangerous_material", "dating", "drogue", "malware", "mixed_adult", "phishing", "sect", "warez"}
-	domainsToMatch := extractDomainsToMatch(categoriesToCheck)
+	categories := []string{"adult", "agressif", "celebrity", "dangerous_material", "dating", "drogue", "malware", "mixed_adult", "phishing", "sect", "warez"}
+	domainsToMatch := extractDomainsToMatch(categories)
 
 	// storing entire file as string to find in one regex every domain + ip
 	b, err := ioutil.ReadFile("/var/log/named/queries.log")
@@ -74,8 +74,8 @@ func bind9ZonesFormat() string {
 }
 
 func updateBlacklistedZones() {
-	categoriesToCheck := []string{"agressif", "dangerous_material", "drogue", "malware", "phishing", "sect", "warez"}
-	domainsToMatch := extractDomainsToMatch(categoriesToCheck)
+	categories := []string{"agressif", "dangerous_material", "drogue", "malware", "phishing", "sect", "warez"}
+	domainsToMatch := extractDomainsToMatch(categories)
 
 	f, err := os.Create("build/blacklisted.db")
 	if err != nil {
@@ -93,6 +93,7 @@ func updateBlacklistedZones() {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println(fmt.Sprintf("%d domains added to blacklist", len(domainsToMatch)))
 }
 
 func main() {
