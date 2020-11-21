@@ -3,14 +3,16 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/urfave/cli"
 	"io/ioutil"
+	"log"
 	"os"
 	"regexp"
 )
 
 func Readln(r *bufio.Reader) (string, error) {
 	var (
-		isPrefix bool  = true
+		isPrefix  = true
 		err      error = nil
 		line, ln []byte
 	)
@@ -21,8 +23,7 @@ func Readln(r *bufio.Reader) (string, error) {
 	return string(ln), err
 }
 
-func main() {
-
+func printDns(){
 	domainsToMatch := make(map[string]string)
 	categoriesToCheck := []string{"adult", "agressif", "celebrity", "dangerous_material", "dating", "drogue", "malware", "mixed_adult", "phishing", "sect", "warez"}
 
@@ -62,4 +63,71 @@ func main() {
 	for _, info := range printableResults {
 		fmt.Printf(info + "\n")
 	}
+}
+
+func updateBindBlacklistedZones() {
+	domainsToMatch := make(map[string]string)
+	categoriesToCheck := []string{"agressif", "dangerous_material", "drogue", "malware", "phishing", "sect", "warez"}
+
+	f, err := os.Create("test.txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Put domains as key in map for faster finding and their category as value
+	for _, filepath := range categoriesToCheck {
+		ofd, err := os.Open("dest/" + filepath + "/domains")
+		if err != nil {
+			fmt.Printf("error opening file: %v\n", err)
+			os.Exit(1)
+		}
+		reader := bufio.NewReader(ofd)
+		domain, e := Readln(reader)
+		for e == nil {
+			domainsToMatch[domain] = domain
+			domain, e = Readln(reader)
+		}
+	}
+
+	for _, domain := range domainsToMatch {
+		f.WriteString("zone \"" + domain + "\" {type master; file \"/etc/bind/blacklisted.db\";};\n")
+	}
+
+	err = f.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
+func main() {
+	app := &cli.App{
+		Commands: []*cli.Command{
+			{
+				Name:    "printDns",
+				Aliases: []string{"p"},
+				Usage:   "print dns already queried",
+				Action: func(c *cli.Context) error {
+					printDns()
+					return nil
+				},
+			},
+			{
+				Name:    "update",
+				Aliases: []string{"u"},
+				Usage:   "update blacklisted domains",
+				Action: func(c *cli.Context) error {
+					updateBindBlacklistedZones()
+					return nil
+				},
+			},
+		},
+	}
+
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }

@@ -8,7 +8,8 @@ build-arm:
       -w /usr/src/go-dns-match \
       -e GOOS=linux \
       -e GOARCH=arm \
-      golang:1.8 go build -o /usr/src/go-dns-match/build/go-dns-match -v
+      -e GOARM=7 \
+      golang:1.14 go get -d -v ./... && go install -v ./... && go build -o build/go-dns-match -v
 
 .PHONY: build-amd64
 build-amd64:
@@ -17,7 +18,7 @@ build-amd64:
       -w /usr/src/go-dns-match \
       -e GOOS=linux \
       -e GOARCH=amd64 \
-      golang:1.8 go build -o /usr/src/go-dns-match/build/go-dns-match -v
+      golang:1.14 go get -d -v ./... && go install -v ./... && go build -o build/go-dns-match -v
 
 .PHONY: update
 update:
