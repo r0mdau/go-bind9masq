@@ -1,0 +1,21 @@
+---
+bind9:
+  queries: "/var/log/named/queries.log"
+categories:
+  toCheck:
+    - adult
+    - agressif
+    - celebrity
+    - dangerous_material
+    - dating
+    - drogue
+    - malware
+    - mixed_adult
+    - phishing
+    - sect
+    - warez
+  toProtect:
+    - malware
+    - phishing
+    - sect
+    - warez
