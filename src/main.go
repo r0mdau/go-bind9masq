@@ -19,7 +19,7 @@ func deduplicateResults(matches [][]string, domainsToMatch map[string]string) ma
 	return printableResults
 }
 
-func printDns(){
+func printDns() {
 	categories := config.Categories.ToCheck
 	domainsToMatch := extractDomainsToMatch(categories)
 	matches := extractDomainsFromLogs()

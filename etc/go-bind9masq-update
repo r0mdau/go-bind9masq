@@ -1,0 +1,5 @@
+#!/bin/bash
+
+test -x /usr/local/bin/go-bind9masq || exit 0
+
+rsync -arpogvt --no-l rsync://ftp.ut-capitole.fr/blacklist /opt/go-bind9masq/

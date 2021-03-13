@@ -1,13 +1,11 @@
 go-bind9masq
 ===============
 
-This project aims to match domain names in logs from dictionnaries of well known domain names.
+This project aims to match domain names in Bind9 queries logs from dictionnaries of well known domain names.
 
-For example, dns queries from dns server Bind is a good candidate.
+̀Script `go-bind9masq-update` is an easy way to fetch famous dictionnaries maintained by Toulouse 1 Capitole University.
 
-̀Script `update.sh` is an easy way to fetch famous dictionnaries maintained by Toulouse 1 Capitole University.
-
-File `main.go` is the entrypoint.
+File `src/main.go` is the entrypoint of the program.
 
 ## Prerequisites
 - docker or go
@@ -48,7 +46,10 @@ Then execute go-bind9masq binary :
 - `go-bind9masq s` : to show domains categories you wanted to check
 - `go-bind9masq u` : to sinkhole your dns queries with toProtect property
 
-### Bind9 configuration for sinkhole
+### Bind9 sinkhole configuration
+
+These two operations have to be done one time, during the first installation.
+
 Include blaklisted.zones file to named.conf.local
 ```
 include "/etc/bind/blacklisted.zones";
@@ -77,6 +78,8 @@ $TTL    604800
 And let `go-bind9masq` binary create zones file.
 
 ## TODO
+
+Set sinkhole configuration when installing this project.
 
 Maybe use these lists
 ```

@@ -19,7 +19,7 @@ type Config struct {
 
 func loadConfig() Config {
 	var config Config
-	f, err := os.Open("config.yml")
+	f, err := os.Open("/etc/go-bind9masq/config.yml")
 	if err != nil {
 		fmt.Println(err)
 	}
