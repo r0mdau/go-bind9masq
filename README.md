@@ -3,7 +3,7 @@ go-bind9masq
 
 This project aims to match domain names in Bind9 queries logs from dictionnaries of well known domain names.
 
-̀Script `go-bind9masq-update` is an easy way to fetch famous dictionnaries maintained by Toulouse 1 Capitole University.
+Script `go-bind9masq-update` is an easy way to fetch famous dictionnaries maintained by Toulouse 1 Capitole University.
 
 File `src/main.go` is the entrypoint of the program.
 
@@ -15,7 +15,7 @@ File `src/main.go` is the entrypoint of the program.
 ## Quick start
 
 ### Build
-Command `make` to build arm or amd64 binary and fetch updates from dictionaries.
+Command `make` to build arm or amd64 binary.
 ```
 make build-amd64
 # or
@@ -30,7 +30,8 @@ make uninstall
 ```
 
 ### Run
-Edit config.yml to fit your needs.
+Edit /etc/go-bind9masq/config.yml to fit your needs.
+
 ```yaml
 # Refers to your log queries.
 bind9:
